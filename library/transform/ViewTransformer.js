@@ -82,7 +82,7 @@ export default class ViewTransformer extends React.Component {
 
   componentWillMount() {
     this.gestureResponder = createResponder({
-      onStartShouldSetResponder: (evt, gestureState) => true,
+      onStartShouldSetResponder: (evt, gestureState) => this.props.enableOnStartShouldSetResponder === false ? false : true,
       onMoveShouldSetResponderCapture: (evt, gestureState) => true,
       //onMoveShouldSetResponder: this.handleMove,
       onResponderMove: this.onResponderMove.bind(this),
@@ -420,6 +420,11 @@ export default class ViewTransformer extends React.Component {
 
 ViewTransformer.propTypes = {
   /**
+   * Use false to disable onStartShouldSetResponder transform. Default is true.
+   */
+  enableOnStartShouldSetResponder: PropTypes.bool,
+
+  /**
    * Use false to disable transform. Default is true.
    */
   enableTransform: PropTypes.bool,
@@ -459,5 +464,6 @@ ViewTransformer.defaultProps = {
   enableTranslate: true,
   enableTransform: true,
   maxScale: 1,
-  enableResistance: false
+  enableResistance: false,
+  enableOnStartShouldSetResponder: true,
 };
