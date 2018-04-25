@@ -82,7 +82,7 @@ export default class ViewTransformer extends React.Component {
 
   componentWillMount() {
     this.gestureResponder = createResponder({
-      onStartShouldSetResponder: (evt, gestureState) => true,
+      onStartShouldSetResponder: (evt, gestureState) => this.props.enableTouches === false ? false : true,
       onMoveShouldSetResponderCapture: (evt, gestureState) => true,
       //onMoveShouldSetResponder: this.handleMove,
       onResponderMove: this.onResponderMove.bind(this),
@@ -420,6 +420,14 @@ export default class ViewTransformer extends React.Component {
 
 ViewTransformer.propTypes = {
   /**
+   * If true, ViewTransformer will handle taps and capture gestures from the very start.
+   * If false, ViewTransformer will only handle moving and doing/undoing pinch zoom, provided
+   * none of ViewTransformer's parents request themselves to handle gestures. Features like
+   * double tapping and single tapping handling will be disabled.
+   */
+  enableTouches: PropTypes.bool,
+
+  /**
    * Use false to disable transform. Default is true.
    */
   enableTransform: PropTypes.bool,
@@ -459,5 +467,6 @@ ViewTransformer.defaultProps = {
   enableTranslate: true,
   enableTransform: true,
   maxScale: 1,
-  enableResistance: false
+  enableResistance: false,
+  enableTouches: true,
 };
