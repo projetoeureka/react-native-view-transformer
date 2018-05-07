@@ -106,7 +106,7 @@ export default class ViewTransformer extends React.Component {
       }
     }
 
-    this.props.onViewTransformed({
+    run && this.props.onViewTransformed({
       scale: this.state.scale,
       translateX: this.state.translateX,
       translateY: this.state.translateY,
