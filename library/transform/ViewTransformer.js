@@ -80,7 +80,7 @@ export default class ViewTransformer extends React.Component {
     return new Transform(this.state.scale, this.state.translateX, this.state.translateY);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.gestureResponder = createResponder({
       onStartShouldSetResponder: (evt, gestureState) => this.props.enableTouches === false ? false : true,
       onMoveShouldSetResponderCapture: (evt, gestureState) => true,
@@ -97,10 +97,19 @@ export default class ViewTransformer extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    this.props.onViewTransformed && this.props.onViewTransformed({
+    if (!this.props.onViewTransformed) return;
+
+    let run = false;
+    for (const key of ['scale', 'translateX', 'translateY']) {
+      if (this.state[key] !== prevState[key]) {
+        run = true;
+      }
+    }
+
+    this.props.onViewTransformed({
       scale: this.state.scale,
       translateX: this.state.translateX,
-      translateY: this.state.translateY
+      translateY: this.state.translateY,
     });
   }
 
