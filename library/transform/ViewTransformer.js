@@ -69,11 +69,17 @@ export default class ViewTransformer extends React.Component {
   }
 
   transformedContentRect() {
-    let rect = transformedRect(this.viewPortRect(), this.currentTransform());
-    if (this.props.contentAspectRatio && this.props.contentAspectRatio > 0) {
-      rect = fitCenterRect(this.props.contentAspectRatio, rect);
+    let rect = this.contentRect();
+    try {
+      rect = transformedRect(this.viewPortRect(), this.currentTransform());
+      if (this.props.contentAspectRatio && this.props.contentAspectRatio > 0) {
+        rect = fitCenterRect(this.props.contentAspectRatio, rect);
+      }
+    } catch(e) {
+      console.error(e);
+    } finally {
+      return rect;
     }
-    return rect;
   }
 
   currentTransform() {
@@ -196,15 +202,19 @@ export default class ViewTransformer extends React.Component {
       let pivotX = gestureState.moveX - this.state.pageX;
       let pivotY = gestureState.moveY - this.state.pageY;
 
-
-      let rect = transformedRect(transformedRect(this.contentRect(), this.currentTransform()), new Transform(
-        scaleBy, dx, dy,
-        {
-          x: pivotX,
-          y: pivotY
-        }
-      ));
-      transform = getTransform(this.contentRect(), rect);
+      try {
+        let rect = transformedRect(transformedRect(this.contentRect(), this.currentTransform()), new Transform(
+          scaleBy, dx, dy,
+          {
+            x: pivotX,
+            y: pivotY
+          }
+        ));
+        transform = getTransform(this.contentRect(), rect);
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
     } else {
       if (Math.abs(dx) > 2 * Math.abs(dy)) {
         dy = 0;
@@ -229,7 +239,6 @@ export default class ViewTransformer extends React.Component {
       return;
     }
 
-
     if (gestureState.doubleTapUp) {
       if (!this.props.enableScale) {
         this.animateBounce();
@@ -253,11 +262,6 @@ export default class ViewTransformer extends React.Component {
       }
     }
   }
-
-
-
-
-
 
   performFling(vx, vy) {
     let startX = 0;
@@ -316,17 +320,21 @@ export default class ViewTransformer extends React.Component {
       scaleBy = this.props.maxScale / curScale;
     }
 
-    let rect = transformedRect(this.transformedContentRect(), new Transform(
-      scaleBy, 0, 0,
-      {
-        x: pivotX,
-        y: pivotY
-      }
-    ));
-    rect = transformedRect(rect, new Transform(1, this.viewPortRect().centerX() - pivotX, this.viewPortRect().centerY() - pivotY));
-    rect = alignedRect(rect, this.viewPortRect());
+    try {
+      let rect = transformedRect(this.transformedContentRect(), new Transform(
+        scaleBy, 0, 0,
+        {
+          x: pivotX,
+          y: pivotY
+        }
+      ));
+      rect = transformedRect(rect, new Transform(1, this.viewPortRect().centerX() - pivotX, this.viewPortRect().centerY() - pivotY));
+      rect = alignedRect(rect, this.viewPortRect());
 
-    this.animate(rect);
+      this.animate(rect);
+    } catch(e) {
+      console.error(e);
+    }
   }
 
   applyResistance(dx, dy) {
@@ -395,17 +403,21 @@ export default class ViewTransformer extends React.Component {
       scaleBy = minScale / curScale;
     }
 
-    let rect = transformedRect(this.transformedContentRect(), new Transform(
-      scaleBy,
-      0,
-      0,
-      {
-        x: this.viewPortRect().centerX(),
-        y: this.viewPortRect().centerY()
-      }
-    ));
-    rect = alignedRect(rect, this.viewPortRect());
-    this.animate(rect);
+    try {
+      let rect = transformedRect(this.transformedContentRect(), new Transform(
+        scaleBy,
+        0,
+        0,
+        {
+          x: this.viewPortRect().centerX(),
+          y: this.viewPortRect().centerY()
+        }
+      ));
+      rect = alignedRect(rect, this.viewPortRect());
+      this.animate(rect);
+    } catch(e) {
+      console.error(e);
+    }
   }
 
   // Above are private functions. Do not use them if you don't known what you are doing.
