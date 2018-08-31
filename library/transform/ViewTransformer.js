@@ -69,17 +69,11 @@ export default class ViewTransformer extends React.Component {
   }
 
   transformedContentRect() {
-    let rect = this.contentRect();
-    try {
-      rect = transformedRect(this.viewPortRect(), this.currentTransform());
-      if (this.props.contentAspectRatio && this.props.contentAspectRatio > 0) {
-        rect = fitCenterRect(this.props.contentAspectRatio, rect);
-      }
-    } catch(e) {
-      console.error(e);
-    } finally {
-      return rect;
+    let rect = transformedRect(this.viewPortRect(), this.currentTransform());
+    if (this.props.contentAspectRatio && this.props.contentAspectRatio > 0) {
+      rect = fitCenterRect(this.props.contentAspectRatio, rect);
     }
+    return rect;
   }
 
   currentTransform() {
@@ -320,21 +314,17 @@ export default class ViewTransformer extends React.Component {
       scaleBy = this.props.maxScale / curScale;
     }
 
-    try {
-      let rect = transformedRect(this.transformedContentRect(), new Transform(
-        scaleBy, 0, 0,
-        {
-          x: pivotX,
-          y: pivotY
-        }
-      ));
-      rect = transformedRect(rect, new Transform(1, this.viewPortRect().centerX() - pivotX, this.viewPortRect().centerY() - pivotY));
-      rect = alignedRect(rect, this.viewPortRect());
+    let rect = transformedRect(this.transformedContentRect(), new Transform(
+      scaleBy, 0, 0,
+      {
+        x: pivotX,
+        y: pivotY
+      }
+    ));
+    rect = transformedRect(rect, new Transform(1, this.viewPortRect().centerX() - pivotX, this.viewPortRect().centerY() - pivotY));
+    rect = alignedRect(rect, this.viewPortRect());
 
-      this.animate(rect);
-    } catch(e) {
-      console.error(e);
-    }
+    this.animate(rect);
   }
 
   applyResistance(dx, dy) {
@@ -403,21 +393,17 @@ export default class ViewTransformer extends React.Component {
       scaleBy = minScale / curScale;
     }
 
-    try {
-      let rect = transformedRect(this.transformedContentRect(), new Transform(
-        scaleBy,
-        0,
-        0,
-        {
-          x: this.viewPortRect().centerX(),
-          y: this.viewPortRect().centerY()
-        }
-      ));
-      rect = alignedRect(rect, this.viewPortRect());
-      this.animate(rect);
-    } catch(e) {
-      console.error(e);
-    }
+    let rect = transformedRect(this.transformedContentRect(), new Transform(
+      scaleBy,
+      0,
+      0,
+      {
+        x: this.viewPortRect().centerX(),
+        y: this.viewPortRect().centerY()
+      }
+    ));
+    rect = alignedRect(rect, this.viewPortRect());
+    this.animate(rect);
   }
 
   // Above are private functions. Do not use them if you don't known what you are doing.
