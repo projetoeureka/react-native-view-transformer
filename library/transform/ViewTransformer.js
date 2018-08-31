@@ -196,15 +196,19 @@ export default class ViewTransformer extends React.Component {
       let pivotX = gestureState.moveX - this.state.pageX;
       let pivotY = gestureState.moveY - this.state.pageY;
 
-
-      let rect = transformedRect(transformedRect(this.contentRect(), this.currentTransform()), new Transform(
-        scaleBy, dx, dy,
-        {
-          x: pivotX,
-          y: pivotY
-        }
-      ));
-      transform = getTransform(this.contentRect(), rect);
+      try {
+        let rect = transformedRect(transformedRect(this.contentRect(), this.currentTransform()), new Transform(
+          scaleBy, dx, dy,
+          {
+            x: pivotX,
+            y: pivotY
+          }
+        ));
+        transform = getTransform(this.contentRect(), rect);
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
     } else {
       if (Math.abs(dx) > 2 * Math.abs(dy)) {
         dy = 0;
@@ -229,7 +233,6 @@ export default class ViewTransformer extends React.Component {
       return;
     }
 
-
     if (gestureState.doubleTapUp) {
       if (!this.props.enableScale) {
         this.animateBounce();
@@ -253,11 +256,6 @@ export default class ViewTransformer extends React.Component {
       }
     }
   }
-
-
-
-
-
 
   performFling(vx, vy) {
     let startX = 0;
